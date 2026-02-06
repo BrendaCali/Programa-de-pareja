@@ -1,9 +1,55 @@
 import { motion } from "motion/react";
 import { Heart } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 export default function App() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [musicStarted, setMusicStarted] = useState(false);
+
+  useEffect(() => {
+    // Intentar reproducir automáticamente
+    const playAudio = async () => {
+      if (audioRef.current) {
+        try {
+          audioRef.current.volume = 0.5;
+          await audioRef.current.play();
+          setMusicStarted(true);
+        } catch (error) {
+          console.log("Autoplay bloqueado, esperando interacción del usuario");
+        }
+      }
+    };
+
+    setTimeout(playAudio, 500);
+  }, []);
+
+  // Función para iniciar música con interacción del usuario
+  const handleStartMusic = async () => {
+    if (audioRef.current && !musicStarted) {
+      try {
+        audioRef.current.volume = 0.5;
+        await audioRef.current.play();
+        setMusicStarted(true);
+      } catch (error) {
+        console.error("Error al reproducir música:", error);
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-rose-50 via-pink-50 to-red-50">
+    <div 
+      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-rose-50 via-pink-50 to-red-50"
+      onClick={handleStartMusic}
+    >
+      {/* Audio Background Music */}
+      <audio
+        ref={audioRef}
+        loop
+        preload="auto"
+      >
+        <source src="/music/musica-romantica.mp3" type="audio/mpeg" />
+      </audio>
+
       {/* Fondo decorativo con corazones flotantes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(15)].map((_, i) => (
